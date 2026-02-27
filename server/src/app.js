@@ -4,6 +4,8 @@ const helmet = require('helmet')
 const morgan = require('morgan')
 const cookieParser = require('cookie-parser')
 
+const authRoutes = require('./routes/auth.routes')
+
 const app = express()
 
 app.use(helmet())
@@ -22,6 +24,8 @@ app.get("/api/v1/health", (req, res) => {
         message: 'MarketHub API running'
     })
 })
+
+app.use('/api/v1/auth', authRoutes)
 
 
 module.exports = app
