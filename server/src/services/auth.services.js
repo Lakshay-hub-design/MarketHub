@@ -1,5 +1,7 @@
 const userModel = require('../models/user.model')
 const { generateOtp, hashOtp } = require('../utils/generateOtp')
+const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken')
+const emailService = require('./email.service')
 
 const registerUser = async (data) => {
     const { name, email, password } = data
@@ -23,12 +25,12 @@ const registerUser = async (data) => {
         emailVerificationOtpExpires: Date.now() + 10 * 60 * 1000
     })
 
-    console.log("OTP:", otp)
+    await emailService.sendOtpEmail(email, otp)
 
     return user
 }
 
-const verifyEmailOtp = async (email, otp) => {
+const verifyEmailOtp = async ({email, otp}) => {
     const hashedOtp = hashOtp(otp)
 
     const user = await userModel.findOne({
@@ -47,11 +49,18 @@ const verifyEmailOtp = async (email, otp) => {
     user.emailVerificationOtp = undefined
     user.emailVerificationOtpExpires = undefined
 
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    user.refreshToken = refreshToken
     await user.save()
 
-    return user
+    return {
+        user,
+        accessToken,
+        refreshToken
+    }
 }
-
 
 module.exports = {
     registerUser,
