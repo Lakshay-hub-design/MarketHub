@@ -2,6 +2,7 @@ const userModel = require('../models/user.model')
 const { generateOtp, hashOtp } = require('../utils/generateOtp')
 const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken')
 const emailService = require('./email.service')
+const bcrypt = require('bcryptjs')
 
 const registerUser = async (data) => {
     const { name, email, password } = data
@@ -62,7 +63,33 @@ const verifyEmailOtp = async ({email, otp}) => {
     }
 }
 
+const loginUser = async (data) => {
+    const { email, password } = data
+
+    const user = await userModel.findOne({ email }).select('+password')
+
+    if(!user){
+        const error = new Error('Invalid credentials')
+        error.statusCode = 401
+        throw error
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+
+    if(!isMatch){
+        const error = new Error('Invalid credentials')
+        error.statusCode = 401
+        throw error
+    }
+
+    const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    return { user, accessToken, refreshToken }
+}
+
 module.exports = {
     registerUser,
-    verifyEmailOtp
+    verifyEmailOtp,
+    loginUser
 }

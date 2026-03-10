@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
     await connectDB()
-    await connectRedis()
+    // await connectRedis()
 
     app.use(errorHandler)
 
