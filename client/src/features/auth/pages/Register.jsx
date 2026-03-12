@@ -3,11 +3,28 @@ import { Link } from 'react-router'
 import { FiEye, FiEyeOff } from "react-icons/fi"
 import { MdEmail } from "react-icons/md";
 import { BsPersonFill } from "react-icons/bs";
+import { useAuth } from '../hooks/useAuth';
 
 const Register = () => {
     const [showPassword, setShowPassword] = useState(false)
-    const handleRegister = (e) => {
+    const [formData, setFormData] = useState({
+        name: "",
+        email: "",
+        password: ""
+    })
+
+    const { handleRegister, loading, error } = useAuth()
+
+    const handleChange = (e) =>{
+        setFormData({
+            ...formData,
+            [e.target.name]: e.target.value
+        })
+    }
+
+    const onSubmit = (e) => {
         e.preventDefault()
+        handleRegister(formData)
     }
 
   return (
@@ -18,24 +35,33 @@ const Register = () => {
                 <h1 className='text-3xl font-bold mb-2'>Create Account</h1>
                 <p className='text-gray-500'>Join MarketHub to start shopping the best <br /> deals</p>
             </div>
-                <form className='flex flex-col gap-5'>
+                <form onSubmit={onSubmit} className='flex flex-col gap-5'>
                     <div className="input-group flex flex-col gap-1 relative">
-                        <label htmlFor="username" className='font-medium'>Username</label>
-                        <input className="w-full px-4 py-3 rounded-lg bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name='username' id='username' placeholder='Choose a username'/>
+                        <label htmlFor="name" className='font-medium'>Name</label>
+                        <input
+                        value={formData.name}
+                        onChange={handleChange}
+                        className="w-full px-4 py-3 rounded-lg bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500" type="text" name='name' id='name' placeholder='Choose a username'/>
                         <div className='absolute right-3 top-13 -translate-y-1/2 text-gray-500'>
                             <BsPersonFill />
                         </div>
                     </div>
                     <div className="input-group flex flex-col gap-1 relative">
                         <label htmlFor="email" className='font-medium'>Email</label>
-                        <input className='w-full px-4 py-3 rounded-lg bg-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500' type="email" name='email' id='email' placeholder='name@example.com'/>
+                        <input
+                        value={formData.email}
+                        onChange={handleChange}
+                        className='w-full px-4 py-3 rounded-lg bg-[#111827] focus:outline-none focus:ring-2 focus:ring-blue-500' type="email" name='email' id='email' placeholder='name@example.com'/>
                        <div className='absolute right-3 top-13 -translate-y-1/2 text-gray-500'>
                         <MdEmail />
                        </div>
                     </div>
                     <div className="input-group flex flex-col gap-1 relative">
                         <label htmlFor="password" className='font-medium'>Password</label>
-                        <input className='w-full px-4 py-3 rounded-lg bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500' type={showPassword ? "text" : "password"} name='password' id='password' placeholder='Min. 8 characters'/>
+                        <input
+                        value={formData.password}
+                        onChange={handleChange}
+                        className='w-full px-4 py-3 rounded-lg bg-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500' type={showPassword ? "text" : "password"} name='password' id='password' placeholder='Min. 8 characters'/>
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
@@ -45,6 +71,8 @@ const Register = () => {
                         </button>
                     </div>
 
+                    {error && <p className="text-red-500">{error}</p>}
+
                     <div className="text-right text-sm">
                         <Link className="text-blue-600 hover:underline">
                             Forgot Password?
@@ -52,8 +80,11 @@ const Register = () => {
                     </div>
 
                     <button
-                    onClick={handleRegister}
-                    className='w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:scale-105 transition duration-300 ease-in-out'>Register</button>
+                    disabled={loading}
+                    type='submit'
+                    className='w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 active:scale-105 transition duration-300 ease-in-out'>
+                        {loading ? "Creating...": "Register"}
+                    </button>
 
                     <p className="text-center text-sm text-gray-600">
                         Already have an account?
