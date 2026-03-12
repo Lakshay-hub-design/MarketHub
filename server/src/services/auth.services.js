@@ -32,6 +32,7 @@ const registerUser = async (data) => {
 }
 
 const verifyEmailOtp = async ({email, otp}) => {
+    console.log(otp)
     const hashedOtp = hashOtp(otp)
 
     const user = await userModel.findOne({
