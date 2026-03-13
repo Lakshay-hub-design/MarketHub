@@ -16,6 +16,16 @@ export async function register({ name, email, password }) {
     }
 }
 
+export async function resendOtp( email ){
+    try {
+        await api.post('/api/v1/auth/resend-otp',{
+            email
+        })
+    } catch (error) {
+        throw error.response?.data || error
+    }
+}
+
 export async function verifyEmail({email, otp}) {
     try {
         const response = await api.post('/api/v1/auth/verify-email', {

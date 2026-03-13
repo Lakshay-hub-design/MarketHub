@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from 'react'
 import { BsArrowLeft } from 'react-icons/bs';
 import { MdMarkEmailRead } from "react-icons/md";
 import { useAuth } from '../hooks/useAuth';
-import { useLocation } from 'react-router';
+import { useLocation, Link } from 'react-router';
 
 const VerifyEmail = () => {
   const OTP_LENGTH = 6
   const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(""))
   const [timer, setTimer] = useState(30)
 
-  const { handleVerifyEmail, loading, error } = useAuth()
+  const { handleVerifyEmail, handleResendOtp, loading, error } = useAuth()
   const inputRef = useRef([])
 
   const location = useLocation()
@@ -80,11 +80,17 @@ const VerifyEmail = () => {
     handleVerifyEmail({ email, otp: otpValue })
   }
 
+  const handleResend = () =>{
+    handleResendOtp(email)
+  }
+
 
   return (
     <main className='w-full min-h-screen bg-[#060606] text-white flex flex-col px-6'>
       <div className="flex items-center gap-3 pt-6">
-        <BsArrowLeft className="cursor-pointer" />
+        <Link to={'/register'}>
+          <BsArrowLeft className="cursor-pointer" />
+        </Link>
         <div className="flex items-center gap-2 mx-auto">
           <div className="bg-blue-500 p-2 rounded-lg">
             🏪
@@ -129,7 +135,7 @@ const VerifyEmail = () => {
         <button 
         onClick={handleSubmit}
         className='w-full max-w-sm bg-blue-500 hover:bg-blue-600 py-4 rounded-xl mb-8 text-lg font-semibold shadow-lg'>
-          {loading ? 'verifying...' : 'Verify Email'}
+          Verify Email
         </button>
 
         <p className="text-gray-400">
@@ -140,8 +146,8 @@ const VerifyEmail = () => {
             </span>
           ) : (
             <button
-              
-              className="text-blue-400"
+              onClick={handleResend}
+              className="text-blue-400 cursor-pointer"
             >
               Resend Code
             </button>

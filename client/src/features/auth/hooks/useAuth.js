@@ -1,6 +1,6 @@
 import { useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
-import { login, register, verifyEmail } from "../services/authApi"
+import { login, register, resendOtp, verifyEmail } from "../services/authApi"
 import { useNavigate } from "react-router"
 
 export const useAuth = () =>{
@@ -24,6 +24,19 @@ export const useAuth = () =>{
         } catch (err) {
             setError(err.message || "Something went wrong")
         } finally{
+            setLoading(false)
+        }
+    }
+
+    const handleResendOtp = async (email) => {
+        try {
+            setLoading(true)
+            setError(null)
+
+            await resendOtp(email)
+        } catch (err) {
+            setError(err.message || 'Something went wrong')
+        }finally{
             setLoading(false)
         }
     }
@@ -53,11 +66,17 @@ export const useAuth = () =>{
 
             navigate('/home')
         } catch (err) {
+            if(err.message === 'Email not verified. OTP sent again.'){
+                navigate('/verify-email', {
+                    state: {email: email}
+                })
+                return
+            }
             setError(err.message || 'Something went wrong')
         } finally{
             setLoading(false)
         }
     }
 
-    return { user, loading, error, handleRegister, handleVerifyEmail, handleLogin}
+    return { user, loading, error, handleRegister, handleResendOtp, handleVerifyEmail, handleLogin}
 }

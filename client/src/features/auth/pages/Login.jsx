@@ -49,7 +49,7 @@ const Login = () => {
                         <input
                         value={formData.password}
                         onChange={handleChange}
-                        className='w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-900 placeholder:text-blue-200' type="password" name='password' id='password' placeholder='Enter your password'/>
+                        className='w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-900 placeholder:text-blue-200' type={showPassword ? "text" : "password"} name='password' id='password' placeholder='Enter your password'/>
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
