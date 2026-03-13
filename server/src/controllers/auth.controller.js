@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const { registerUser, verifyEmailOtp, loginUser } = require("../services/auth.services")
+const { registerUser, verifyEmailOtp, loginUser, resendEmailOtp } = require("../services/auth.services")
 
 const register = asyncHandler(async (req, res, next) => {
     const user = await registerUser(req.body)
@@ -32,6 +32,17 @@ const verifyEmail = asyncHandler(async (req, res, next) => {
     })
 })
 
+const resendOtp = asyncHandler(async (req, res) => {
+    const { email } = req.body
+
+    await resendEmailOtp(email)
+
+    res.status(200).json({
+        success: true,
+        message: 'OTP sent succesfully'
+    })
+})
+
 const login = asyncHandler(async (req, res, next) => {
     const { user, accessToken, refreshToken } = await loginUser(req.body)
 
@@ -57,5 +68,6 @@ const login = asyncHandler(async (req, res, next) => {
 module.exports = {
     register,
     verifyEmail,
+    resendOtp,
     login
 }
