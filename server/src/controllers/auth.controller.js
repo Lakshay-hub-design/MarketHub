@@ -1,4 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
+const userModel = require("../models/user.model");
 const { registerUser, verifyEmailOtp, loginUser, resendEmailOtp } = require("../services/auth.services")
 
 const register = asyncHandler(async (req, res, next) => {
@@ -64,10 +65,20 @@ const login = asyncHandler(async (req, res, next) => {
     })
 })
 
+const getMe = asyncHandler(async (req, res) => {
+    const user = await userModel.findById(req.user.id)
+
+    res.status(200).json({
+        success: true,
+        user
+    })
+})
+
 
 module.exports = {
     register,
     verifyEmail,
     resendOtp,
-    login
+    login,
+    getMe
 }

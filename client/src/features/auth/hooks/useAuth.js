@@ -2,6 +2,7 @@ import { useContext } from "react"
 import { AuthContext } from "../context/AuthContext"
 import { login, register, resendOtp, verifyEmail } from "../services/authApi"
 import { useNavigate } from "react-router"
+import toast from "react-hot-toast"
 
 export const useAuth = () =>{
     const context = useContext(AuthContext)
@@ -21,6 +22,7 @@ export const useAuth = () =>{
             navigate('/verify-email', {
                 state: {email: email}
             })
+            toast.success('OTP sent to your email')
         } catch (err) {
             setError(err.message || "Something went wrong")
         } finally{
@@ -34,6 +36,7 @@ export const useAuth = () =>{
             setError(null)
 
             await resendOtp(email)
+            toast('OTP sent to your email')
         } catch (err) {
             setError(err.message || 'Something went wrong')
         }finally{
@@ -46,7 +49,7 @@ export const useAuth = () =>{
             setLoading(true)
 
             await verifyEmail({ email, otp })
-
+            toast.success('Email verified successfully')
             navigate('/home')
         } catch (err) {
             setError(err.message || 'Something went wrong')
@@ -65,11 +68,13 @@ export const useAuth = () =>{
             setUser(data.user)
 
             navigate('/home')
+            toast.success("Logged in successfully")
         } catch (err) {
             if(err.message === 'Email not verified. OTP sent again.'){
                 navigate('/verify-email', {
                     state: {email: email}
                 })
+                toast.error('Email not verified. OTP sent again.')
                 return
             }
             setError(err.message || 'Something went wrong')

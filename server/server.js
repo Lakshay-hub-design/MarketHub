@@ -7,7 +7,6 @@ const errorHandler = require('./src/middlewares/error.middleware');
 
 const PORT = process.env.PORT || 5000;
 
-
 const startServer = async () => {
     await connectDB()
     // await connectRedis()
