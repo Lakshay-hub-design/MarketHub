@@ -1,7 +1,7 @@
 const userModel = require('../models/user.model')
 const { generateOtp, hashOtp } = require('../utils/generateOtp')
 const { generateAccessToken, generateRefreshToken } = require('../utils/generateToken')
-const emailService = require('./email.service')
+const emailService = require('../providers/email.service')
 const bcrypt = require('bcryptjs')
 
 const registerUser = async (data) => {
