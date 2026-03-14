@@ -9,7 +9,7 @@ const VerifyEmail = () => {
   const [otp, setOtp] = useState(new Array(OTP_LENGTH).fill(""))
   const [timer, setTimer] = useState(30)
 
-  const { handleVerifyEmail, handleResendOtp, loading, error } = useAuth()
+  const { handleVerifyEmail, handleResendOtp, error } = useAuth()
   const inputRef = useRef([])
 
   const location = useLocation()
