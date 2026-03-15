@@ -1,6 +1,7 @@
 const Product = require('../models/product.model')
 const Category = require('../models/category.model')
 const { uploadFile } = require('../providers/cloud.provider')
+const { redisClient } = require('../config/redis')
 
 const createProduct = async (data, files, sellerId) => {
     const { title, description, price, stock, category } = data
@@ -42,7 +43,15 @@ const getproducts = async (query) => {
     const page = Math.max(parseInt(query.page) || 1, 1)
     const limit = Math.min(parseInt(query.limit) || 10, 50)
     const skip = (page - 1) * limit
+
+    const cacheKey = `products:search=${query.search || ""}:category=${query.category || ""}:page=${page}:limit=${limit}`
     
+    const cachedProducts = await redisClient.get(cacheKey)
+
+    if (cachedProducts) {
+        return JSON.parse(cachedProducts);
+    }
+
     const filter = { isActive: true }
 
     if(query.search){
@@ -53,7 +62,7 @@ const getproducts = async (query) => {
         filter.category = query.category
     }
 
-   const mongoQuery = await Product.find(filter)
+   const mongoQuery = Product.find(filter)
    .populate('category', 'name slug')
    .populate('seller', 'name')
 
@@ -68,13 +77,21 @@ const getproducts = async (query) => {
 
    const total = await Product.countDocuments(query)
 
-   return {
-    products,
-    total,
-    page,
-    limit,
-    pages: Math.ceil(total / limit)
+   const result = {
+        products,
+        total,
+        page,
+        limit,
+        pages: Math.ceil(total / limit)
    }
+
+   await redisClient.setEx(
+    cacheKey,
+    300,
+    JSON.stringify(result)
+   )
+
+   return result
 }
 
 const updateProduct = async (productId, sellerId, data, files) => {

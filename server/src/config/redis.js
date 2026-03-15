@@ -1,17 +1,17 @@
 const { createClient } = require('redis')
 
-const client = createClient({
+const redisClient = createClient({
     url: process.env.REDIS_URL
 })
 
-client.on('error', (err) => console.log('Redis Client Error', err))
+redisClient.on('error', (err) => console.log('Redis Client Error', err))
 
 const connectRedis = async () => {
-    await client.connect()
+    await redisClient.connect()
     console.log('Connected to Redis');
 }
 
 module.exports = {
-    client,
+    redisClient,
     connectRedis
 }

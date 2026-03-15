@@ -29,7 +29,7 @@ app.get("/api/v1/health", (req, res) => {
 
 app.use('/api/v1/auth', authRoutes)
 app.use('/api/v1/categories', categoryRoutes)
-app.use('/api/vi/products', productRoutes)
+app.use('/api/v1/products', productRoutes)
 
 
 module.exports = app
