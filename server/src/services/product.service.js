@@ -55,7 +55,7 @@ const getproducts = async (query) => {
     const filter = { isActive: true }
 
     if(query.search){
-        filter.$text = { $search: search}
+        filter.$text = { $search: query.search}
     }
 
     if(query.category){
@@ -75,7 +75,7 @@ const getproducts = async (query) => {
     .skip(skip)
     .limit(limit)
 
-   const total = await Product.countDocuments(query)
+   const total = await Product.countDocuments(filter)
 
    const result = {
         products,
