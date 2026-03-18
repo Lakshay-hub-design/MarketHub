@@ -178,7 +178,36 @@ const verifyPaymentService = async (data, userId) => {
     }
 }
 
+const getUserOrders = async (userId) => {
+
+    const orders = await Order.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .lean()
+
+    return orders
+}
+
+const getOrderById = async (orderId, userId) => {
+
+    const order = await Order.finOne({
+        _id: orderId,
+        user: userId
+    })
+    .populate('sellerOrders.items.product', 'title images')
+    .lean()
+
+    if (!order) {
+        const error = new Error("Order not found")
+        error.statusCode = 404
+        throw error
+    }
+
+    return order
+}   
+
 module.exports = {
     checkoutService,
-    verifyPaymentService
+    verifyPaymentService,
+    getUserOrders,
+    getOrderById
 }

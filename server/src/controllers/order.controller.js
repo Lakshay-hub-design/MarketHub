@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const { checkoutService, verifyPaymentService } = require("../services/order.service");
+const { checkoutService, verifyPaymentService, getUserOrders, getOrderById } = require("../services/order.service");
 
 const checkoutController = asyncHandler(async (req, res) => {
     const { shippingAddress } = req.body
@@ -28,7 +28,32 @@ const verifyPaymentController = asyncHandler(async (req, res) => {
     });
 })
 
+const getUserOrdersController = asyncHandler(async (req, res) => {
+    const orders = await getUserOrders(req.user.id)
+
+    res.status(200).json({
+        success: true,
+        message: 'Orders fetched succesfully',
+        data: orders
+    });
+})
+
+const getOrderController = asyncHandler(async (req, res) => {
+    const order = await getOrderById(
+        req.params.id,
+        req.user.id
+    )
+
+    res.status(200).json({
+        success: true,
+        message: 'Order fetched succefully',
+        data: order
+    })
+})
+
 module.exports = {
     checkoutController,
-    verifyPaymentController
+    verifyPaymentController,
+    getUserOrdersController,
+    getOrderController
 }
