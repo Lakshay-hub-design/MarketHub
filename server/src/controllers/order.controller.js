@@ -1,5 +1,5 @@
 const asyncHandler = require("../middlewares/asyncHandler");
-const { checkoutService } = require("../services/order.service");
+const { checkoutService, verifyPaymentService } = require("../services/order.service");
 
 const checkoutController = asyncHandler(async (req, res) => {
     const { shippingAddress } = req.body
@@ -15,6 +15,20 @@ const checkoutController = asyncHandler(async (req, res) => {
     })
 })
 
+const verifyPaymentController = asyncHandler(async (req, res) => {
+    const order = await verifyPaymentService(
+        req.body,
+        req.user.id
+    )
+
+    res.status(200).json({
+        success: true,
+        message: "Payment verified successfully",
+        data: order
+    });
+})
+
 module.exports = {
-    checkoutController
+    checkoutController,
+    verifyPaymentController
 }
